@@ -1,111 +1,101 @@
 USE PET_SUPPLIES_SHOP;
 
-CREATE TABLE Orders
-(
-    OrderID INT PRIMARY KEY,
-    CustomerName VARCHAR(50),
-    OrderDate DATE,
-    TotalAmount DECIMAL(10,2),
-    OrderStatus VARCHAR(20)
-);
 
-CREATE TABLE Order_Details
+
+
+CREATE TABLE Payment
 (
-    OrderDetailID INT PRIMARY KEY,
+    PaymentID INT PRIMARY KEY,
     OrderID INT,
-    ProductID INT,
-    Quantity INT,
-    UnitPrice DECIMAL(10,2),
+    PaymentMode VARCHAR(20),
+    PaymentDate DATE,
+    PaymentAmount DECIMAL(10,2),
+    PaymentStatus VARCHAR(20),
+
     FOREIGN KEY (OrderID)
-    REFERENCES Orders(OrderID),
-    FOREIGN KEY (ProductID)
-    REFERENCES Product(ProductID)
+    REFERENCES Orders(OrderID)
 );
 
-INSERT INTO Orders
-(OrderID, CustomerName, OrderDate, TotalAmount, OrderStatus)
+
+
+
+INSERT INTO Payment
+(PaymentID, OrderID, PaymentMode, PaymentDate, PaymentAmount, PaymentStatus)
 VALUES
-(501, 'ANU', '2026-09-01', 500.00, 'Delivered'),
-(502, 'RAJEE', '2026-09-02', 750.00, 'Pending'),
-(503, 'DHIVYA', '2026-09-03', 600.00, 'Shipped'),
-(504, 'POOJA', '2026-09-04', 900.00, 'Delivered'),
-(505, 'HEMA', '2026-09-05', 450.00, 'Pending'),
-(506, 'ARUN', '2026-09-06', 1200.00, 'Shipped'),
-(507, 'MEENA', '2026-09-07', 350.00, 'Delivered'),
-(508, 'KARTHIK', '2026-09-08', 800.00, 'Pending'),
-(509, 'NITHYA', '2026-09-09', 650.00, 'Shipped'),
-(510, 'VISHAL', '2026-09-10', 1000.00, 'Delivered');
-
-INSERT INTO Order_Details
-(OrderDetailID, OrderID, ProductID, Quantity, UnitPrice)
-VALUES
-(1, 501, 101, 2, 100.00),
-(2, 502, 103, 3, 250.00),
-(3, 503, 104, 2, 300.00),
-(4, 504, 105, 3, 300.00),
-(5, 505, 106, 3, 150.00),
-(6, 506, 107, 4, 300.00),
-(7, 507, 109, 2, 175.00),
-(8, 508, 110, 2, 400.00),
-(9, 509, 111, 2, 325.00),
-(10, 510, 112, 4, 250.00);
+(601, 501, 'UPI',  '2026-09-01', 500.00,  'SUCCESSFUL'),
+(602, 502, 'CARD', '2026-09-02', 750.00,  'SUCCESSFUL'),
+(603, 503, 'CASH', '2026-09-03', 600.00,  'FAILED'),
+(604, 504, 'UPI',  '2026-09-04', 900.00,  'SUCCESSFUL'),
+(605, 505, 'CARD', '2026-09-05', 450.00,  'SUCCESSFUL'),
+(606, 506, 'CASH', '2026-09-06', 1200.00, 'SUCCESSFUL'),
+(607, 507, 'UPI',  '2026-09-07', 350.00,  'FAILED'),
+(608, 508, 'CARD', '2026-09-08', 800.00,  'SUCCESSFUL'),
+(609, 509, 'CASH', '2026-09-09', 650.00,  'SUCCESSFUL'),
+(610, 510, 'UPI',  '2026-09-10', 1000.00, 'SUCCESSFUL');
 
 
-SELECT * FROM Orders;
+SELECT * FROM Payment;
 
 
-SELECT * FROM Order_Details;
 
 
-UPDATE Orders
-SET OrderStatus = 'Shipped'
-WHERE OrderID = 502;
+UPDATE Payment
+SET PaymentStatus = 'SUCCESSFUL'
+WHERE PaymentID = 603;
 
-UPDATE Orders
-SET OrderStatus = 'Delivered'
-WHERE OrderID = 503;
-
-
-SELECT * FROM Orders
-ORDER BY CustomerName, OrderDate;
+UPDATE Payment
+SET PaymentStatus = 'SUCCESSFUL'
+WHERE PaymentID = 607;
 
 
-SELECT * FROM Orders
-WHERE CustomerName = 'ANU'
-ORDER BY OrderDate;
+SELECT * FROM Payment
+WHERE PaymentID IN (603, 607);
 
 
-SELECT * FROM Orders
-WHERE OrderStatus = 'Pending';
 
 
-SELECT * FROM Orders
-WHERE OrderStatus = 'Shipped';
+SELECT * FROM Payment
+WHERE PaymentStatus = 'SUCCESSFUL';
 
 
-SELECT * FROM Orders
-WHERE OrderStatus = 'Delivered';
 
 
-SELECT CustomerName, COUNT(*) AS TotalOrders
-FROM Orders
-GROUP BY CustomerName;
+SELECT * FROM Payment
+WHERE PaymentStatus = 'FAILED';
 
 
-SELECT CustomerName, SUM(TotalAmount) AS TotalPurchase
-FROM Orders
-GROUP BY CustomerName;
 
 
-SELECT * FROM Order_Details
-WHERE OrderID = 501;
 
 
-SELECT * FROM Order_Details
-WHERE ProductID = 101;
+SELECT * FROM Payment
+WHERE PaymentMode = 'UPI';
 
 
-SELECT OrderID,
-       SUM(Quantity * UnitPrice) AS OrderTotal
-FROM Order_Details
-GROUP BY OrderID;
+
+
+SELECT * FROM Payment
+WHERE PaymentMode = 'CARD';
+
+
+
+
+SELECT * FROM Payment
+WHERE PaymentMode = 'CASH';
+
+
+
+
+SELECT PaymentMode,
+       COUNT(*) AS NumberOfTransactions
+FROM Payment
+GROUP BY PaymentMode;
+
+
+
+
+SELECT PaymentMode,
+       SUM(PaymentAmount) AS TotalAmountReceived
+FROM Payment
+WHERE PaymentStatus = 'SUCCESSFUL'
+GROUP BY PaymentMode;
